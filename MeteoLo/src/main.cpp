@@ -25,7 +25,6 @@ void setup(void) {
   senzoryDS.begin();
 
  WiFi.begin(ssid, password); // wifi s heslem
-// WiFi.begin(ssid); // wifi bez hesla
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
