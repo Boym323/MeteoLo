@@ -1,22 +1,20 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
 
-const char* ssid = "HomeZl";
-const char* password = "Domov4770";
-
-//const char* ssid = "SWS_free";
+const char* ssid = "Home";
+const char* password = "1234567890";
 
 // připojení knihoven
 #include <OneWire.h>
 #include <DallasTemperature.h>
 char server [] = "boym.cz"; //URL adresa serveru
 
-// nastavení čísla vstupního pinu
-const int pinCidlaDS = 4;
-// vytvoření instance oneWireDS z knihovny OneWire
-OneWire oneWireDS(pinCidlaDS);
-// vytvoření instance senzoryDS z knihovny DallasTemperature
-DallasTemperature senzoryDS(&oneWireDS);
+
+const int pinCidlaDS = 4; // nastavení čísla vstupního pinu
+
+OneWire oneWireDS(pinCidlaDS); // vytvoření instance oneWireDS z knihovny OneWire
+
+DallasTemperature senzoryDS(&oneWireDS); // vytvoření instance senzoryDS z knihovny DallasTemperature
 
 void setup(void) {
   // komunikace přes sériovou linku rychlostí 115200 baud
@@ -60,12 +58,13 @@ void loop ()
     float url6 = Voltage;
     String host = "boym.cz";
 
+
     client.print(String("GET ") + url + url1 + url2 + url3 + url4 + url5 + url6 + " HTTP/1.1\r\n" +
                  "Host: " + host + "\r\n" +
                  "Connection: close\r\n\r\n");
 
 
-    Serial.println("[Response:]");
+    Serial.println("[Response:]");   // není potřeba jenom pro ladění
     while (client.connected())
     {
       if (client.available())
@@ -81,7 +80,7 @@ void loop ()
   {
     Serial.println("connection failed!]");
     client.stop();
-  }
+  } // až po sem není třeba 
   //delay(60000); //nahrazeno funkcí níže
   ESP.deepSleep(60e6);
 }
