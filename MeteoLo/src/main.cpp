@@ -1,0 +1,88 @@
+#include <ESP8266WiFi.h>
+#include <WiFiClientSecure.h>
+
+const char* ssid = "HomeZl";
+const char* password = "Domov4770";
+
+//const char* ssid = "SWS_free";
+
+// připojení knihoven
+#include <OneWire.h>
+#include <DallasTemperature.h>
+char server [] = "boym.cz"; //URL adresa serveru
+
+// nastavení čísla vstupního pinu
+const int pinCidlaDS = 4;
+// vytvoření instance oneWireDS z knihovny OneWire
+OneWire oneWireDS(pinCidlaDS);
+// vytvoření instance senzoryDS z knihovny DallasTemperature
+DallasTemperature senzoryDS(&oneWireDS);
+
+void setup(void) {
+  // komunikace přes sériovou linku rychlostí 115200 baud
+  Serial.begin(115200);
+  // zapnutí komunikace knihovny s teplotním čidlem
+  senzoryDS.begin();
+
+ WiFi.begin(ssid, password); // wifi s heslem
+// WiFi.begin(ssid); // wifi bez hesla
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+
+}
+
+void loop ()
+{
+
+  WiFiClient client;
+
+  // pauza pro přehlednější výpis
+  // wait for WiFi connection
+  if (client.connect(server, 80)) {
+    delay(1000);
+    senzoryDS.requestTemperatures();   // načtení informací ze všech připojených čidel na daném pinu
+    int sensorValue = analogRead(A0); // čtení baterie
+    float Voltage = sensorValue * (5.0 / 1023.0); // čtení baterie
+
+    String url = "/logger.php";
+    String url1 = "?Teplota_1=";
+    float url2 = senzoryDS.getTempCByIndex(0);
+    String url3 = "&Teplota_2=";
+    float url4 = senzoryDS.getTempCByIndex(1);
+    String url5 = "&VoltageBat=";
+    float url6 = Voltage;
+    String host = "boym.cz";
+
+    client.print(String("GET ") + url + url1 + url2 + url3 + url4 + url5 + url6 + " HTTP/1.1\r\n" +
+                 "Host: " + host + "\r\n" +
+                 "Connection: close\r\n\r\n");
+
+
+    Serial.println("[Response:]");
+    while (client.connected())
+    {
+      if (client.available())
+      {
+        String line = client.readStringUntil('\n');
+        Serial.println(line);
+      }
+    }
+    client.stop();
+    Serial.println("\n[Disconnected]");
+  }
+  else
+  {
+    Serial.println("connection failed!]");
+    client.stop();
+  }
+  //delay(60000); //nahrazeno funkcí níže
+  ESP.deepSleep(60e6);
+}
