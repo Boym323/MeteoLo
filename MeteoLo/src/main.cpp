@@ -1,6 +1,6 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
-int CasSpanku = 60;
+int CasSpanku = 60; // cas v sekundách
 const char* ssid = "Home";
 const char* password = "1234567890";
 
@@ -10,7 +10,7 @@ const char* password = "1234567890";
 char server [] = "boym.cz"; //URL adresa serveru
 
 
-const int pinCidlaDS = 4; // nastavení čísla vstupního pinu
+const int pinCidlaDS = 4; // nastavení čísla vstupního pinu pro OneWire
 
 OneWire oneWireDS(pinCidlaDS); // vytvoření instance oneWireDS z knihovny OneWire
 
