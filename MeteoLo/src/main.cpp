@@ -1,6 +1,6 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
-
+int CasSpanku = 60;
 const char* ssid = "Home";
 const char* password = "1234567890";
 
@@ -81,6 +81,6 @@ void loop ()
     Serial.println("connection failed!]");
     client.stop();
   } // až po sem není třeba
-  
-  ESP.deepSleep(60e6);
+
+  ESP.deepSleep(CasSpanku*1000000);
 }
