@@ -80,7 +80,7 @@ void loop ()
   {
     Serial.println("connection failed!]");
     client.stop();
-  } // až po sem není třeba 
-  //delay(60000); //nahrazeno funkcí níže
+  } // až po sem není třeba
+  
   ESP.deepSleep(60e6);
 }
