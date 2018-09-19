@@ -28,8 +28,9 @@ void setup(void) {
   // zapnutí komunikace knihovny s teplotním čidlem
   senzoryDS.begin();
   Wire.begin(); //inicializace I2C sběrnice
+  lightMeter.begin();
 
- WiFi.begin(ssid, password); // wifi s heslem
+  WiFi.begin(ssid, password); // wifi s heslem
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -55,6 +56,7 @@ void loop ()
     senzoryDS.requestTemperatures();   // načtení informací ze všech připojených čidel na daném pinu
     int sensorValue = analogRead(A0); // čtení baterie
     float Voltage = sensorValue * (5.0 / 1023.0); // čtení baterie
+    uint16_t lux = lightMeter.readLightLevel(); //čtení intenzity osvětlení
 
     String url = "/logger.php";
     String url1 = "?Teplota_1=";
@@ -63,10 +65,12 @@ void loop ()
     float url4 = senzoryDS.getTempCByIndex(1);
     String url5 = "&VoltageBat=";
     float url6 = Voltage;
+    String url7 = "&Lux=";
+    float url8 = lux;
     String host = "boym.cz";
 
 
-    client.print(String("GET ") + url + url1 + url2 + url3 + url4 + url5 + url6 + " HTTP/1.1\r\n" +
+    client.print(String("GET ") + url + url1 + url2 + url3 + url4 + url5 + url6 + url7 + url8 + " HTTP/1.1\r\n" +
                  "Host: " + host + "\r\n" +
                  "Connection: close\r\n\r\n");
 
