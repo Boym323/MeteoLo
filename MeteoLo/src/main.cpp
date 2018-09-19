@@ -1,5 +1,6 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
+
 int CasSpanku = 60; // cas v sekundách
 const char* ssid = "Home";
 const char* password = "1234567890";
@@ -7,6 +8,10 @@ const char* password = "1234567890";
 // připojení knihoven
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include <Wire.h>
+#include <BH1750.h> // knihovna luxmetr
+BH1750 lightMeter;
+
 char server [] = "boym.cz"; //URL adresa serveru
 
 
@@ -16,11 +21,13 @@ OneWire oneWireDS(pinCidlaDS); // vytvoření instance oneWireDS z knihovny OneW
 
 DallasTemperature senzoryDS(&oneWireDS); // vytvoření instance senzoryDS z knihovny DallasTemperature
 
+
 void setup(void) {
   // komunikace přes sériovou linku rychlostí 115200 baud
   Serial.begin(115200);
   // zapnutí komunikace knihovny s teplotním čidlem
   senzoryDS.begin();
+  Wire.begin(); //inicializace I2C sběrnice
 
  WiFi.begin(ssid, password); // wifi s heslem
 
