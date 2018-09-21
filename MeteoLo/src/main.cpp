@@ -1,6 +1,9 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
 
+#include <WiFiUdp.h>      //OTA
+#include <ArduinoOTA.h>   //OTA
+
 int CasSpanku = 60; // cas v sekundách
 const char* ssid = "Home";
 const char* password = "1234567890";
@@ -23,6 +26,28 @@ DallasTemperature senzoryDS(&oneWireDS); // vytvoření instance senzoryDS z kni
 
 
 void setup(void) {
+
+  ArduinoOTA.setHostname("WemosMeteo"); //OTA podpora
+  ArduinoOTA.onStart([]() {
+    Serial.println("Start");
+  });
+  ArduinoOTA.onEnd([]() {
+    Serial.println("\nEnd");
+  });
+  ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+    Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+  });
+  ArduinoOTA.onError([](ota_error_t error) {
+    Serial.printf("Error[%u]: ", error);
+    if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
+    else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
+    else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
+    else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
+    else if (error == OTA_END_ERROR) Serial.println("End Failed");
+  });
+  ArduinoOTA.begin();  // až po sem se jedná o podporu OTA
+
+
   // komunikace přes sériovou linku rychlostí 115200 baud
   Serial.begin(115200);
   // zapnutí komunikace knihovny s teplotním čidlem
@@ -46,7 +71,7 @@ void setup(void) {
 
 void loop ()
 {
-
+  ArduinoOTA.handle(); // OTA
   WiFiClient client;
 
   // pauza pro přehlednější výpis
