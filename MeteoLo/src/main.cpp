@@ -80,7 +80,7 @@ void loop ()
     delay(1000);
     senzoryDS.requestTemperatures();   // načtení informací ze všech připojených čidel na daném pinu
     int sensorValue = analogRead(A0); // čtení baterie
-    float Voltage = sensorValue * (5.0 / 1023.0); // čtení baterie
+    float Voltage = sensorValue * (5.0 / 1023.0); // přepočet na V baterie
     uint16_t lux = lightMeter.readLightLevel(); //čtení intenzity osvětlení
 
     String url = "/logger.php";
