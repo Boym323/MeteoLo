@@ -1,0 +1,21 @@
+ROM = 28 42 51 45 92 5 2 18
+ROM = 28 30 A4 45 92 7 2 B
+ROM = 28 BC 77 45 92 B 2 C1
+ROM = 28 A7 E8 77 91 9 2 80
+ROM = 28 2E B0 77 91 8 2 93
+ROM = 28 F4 D0 77 91 9 2 4D
+ROM = 28 B9 77 77 91 14 2 75
+ROM = 28 89 92 77 91 11 2 6F
+ROM = 28 AB A0 77 91 11 2 B0
+​
+adresy čidel 
+
+
+
+9 Je ve 100 Cm - 28 AB A0 77 91 11 2 B0
+8 je v 50 Cm - 28 89 92 77 91 11 2 6F
+7 je v 10 Cm - 28 B9 77 77 91 14 2 75
+6 je v 5 Cm - 28 F4 D0 77 91 9 2 4D
+2 je 5cm přízemní - 28 30 A4 45 92 7 2 B
+4 je 20 Cm pod zemi - 28 A7 E8 77 91 9 2 80
+​
