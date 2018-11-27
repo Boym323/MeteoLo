@@ -100,7 +100,6 @@ void loop ()
                  "Connection: close\r\n\r\n");
 
 // není potřeba jenom pro ladění
-
     Serial.println("[Response:]");   
 
     while (client.connected())
