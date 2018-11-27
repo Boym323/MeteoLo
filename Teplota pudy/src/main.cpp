@@ -99,8 +99,10 @@ void loop ()
                  "Host: " + host + "\r\n" +
                  "Connection: close\r\n\r\n");
 
+// není potřeba jenom pro ladění
 
-    Serial.println("[Response:]");   // není potřeba jenom pro ladění
+    Serial.println("[Response:]");   
+
     while (client.connected())
     {
       if (client.available())
