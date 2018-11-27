@@ -76,12 +76,12 @@ void loop ()
       senzoryDS.requestTemperaturesByAddress(tempSenzor5cm);  
       senzoryDS.requestTemperaturesByAddress(tempSenzorPrizemni5cm); 
 
-      temp100cm = sensors.getTempC(tempSenzor100cm);
-      temp50cm = sensors.getTempC(tempSenzor50cm);
-      temp20cm = sensors.getTempC(tempSenzor20cm);
-      temp10cm = sensors.getTempC(tempSenzor10cm);
-      temp5cm = sensors.getTempC(tempSenzor5cm);
-      tempPrizemni5cm = sensors.getTempC(tempSenzorPrizemni5cm);
+      temp100cm = senzoryDS.getTempC(tempSenzor100cm);
+      temp50cm = senzoryDS.getTempC(tempSenzor50cm);
+      temp20cm = senzoryDS.getTempC(tempSenzor20cm);
+      temp10cm = senzoryDS.getTempC(tempSenzor10cm);
+      temp5cm = senzoryDS.getTempC(tempSenzor5cm);
+      tempPrizemni5cm = senzoryDS.getTempC(tempSenzorPrizemni5cm);
   
     /*konec 1-wire sekce*/
     
