@@ -1,0 +1,6 @@
+
+*.DB
+*.DB-shm
+*.DB-wal
+.pioenvs/**
+.vscode/**

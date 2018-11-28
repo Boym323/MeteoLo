@@ -87,15 +87,18 @@ void loop ()
     
     
     String url = "/logger.php";
-    String url1 = "?Teplota_1=";
-    float url2 = senzoryDS.getTempCByIndex(0);
-    String url3 = "&Teplota_2=";
-    float url4 = senzoryDS.getTempCByIndex(1);
+    String url1 = "?Teplota_100=";
+    String url2 = "&Teplota_50=";
+    String url3 = "&Teplota_20=";
+    String url4 = "&Teplota_10=";
+    String url5 = "&Teplota_5=";
+    String url6 = "&Teplota_prizemni=";
+  //  float url4 = senzoryDS.getTempCByIndex(1);
 
     String host = "boym.cz";
 
 
-    client.print(String("GET ") + url + url1 + url2 + url3 + url4 + " HTTP/1.1\r\n" +
+    client.print(String("GET ") + url + url1 + temp100cm + url2 + temp50cm+ url3 + temp20cm + url4 + temp10cm +url5 + temp5cm + url6 + tempPrizemni5cm + " HTTP/1.1\r\n" +
                  "Host: " + host + "\r\n" +
                  "Connection: close\r\n\r\n");
 
