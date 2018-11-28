@@ -4,3 +4,4 @@
 *.DB-wal
 .pioenvs/**
 .vscode/**
+MeteoLo/.vscode/.BROWSE.C_CPP.DB-wal
