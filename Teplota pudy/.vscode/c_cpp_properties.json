@@ -118,5 +118,6 @@
             "cppStandard": "c++11",
             "compilerPath": "C:/Users/MPomykal/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-gcc.exe  -Wpointer-arith -Wno-implicit-function-declaration -Wl,-EL -fno-inline-functions -nostdlib -Os -mlongcalls -mtext-section-literals -falign-functions=4 -U__STRICT_ANSI__ -ffunction-sections -fdata-sections -Wall"
         }
-    ]
+    ],
+    "version": 4
 }

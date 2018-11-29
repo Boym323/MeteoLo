@@ -1,8 +1,9 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
+#include <ESP8266httpUpdate.h> //pro OTA
 
 
-int CasSpanku = 60; // cas v sekundách
+int CasSpanku = 300; // cas v sekundách
 const char* ssid = "Home";
 const char* password = "1234567890";
 
@@ -121,6 +122,26 @@ void loop ()
     Serial.println("connection failed!]");
     client.stop();
   } // až po sem není třeba
+
+//update sekce
+
+t_httpUpdate_return ret = ESPhttpUpdate.update("192.168.1.2", 80, "/esp/update/update.php", "");
+switch(ret) {
+    case HTTP_UPDATE_FAILED:
+        Serial.println("[update] Update failed.");
+        break;
+    case HTTP_UPDATE_NO_UPDATES:
+        Serial.println("[update] Update no Update.");
+        break;
+    case HTTP_UPDATE_OK:
+        Serial.println("[update] Update ok."); // may not called we reboot the ESP
+        break;
+}
+
+
+//konec update sekce
+
+
 
   ESP.deepSleep(CasSpanku*1000000);
 }
