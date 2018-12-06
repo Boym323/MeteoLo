@@ -1,9 +1,8 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
-#include <ESP8266httpUpdate.h> //pro OTA
-
 
 int CasSpanku = 300; // cas v sekundách
+
 const char* ssid = "Home";
 const char* password = "1234567890";
 
@@ -12,7 +11,7 @@ const char* password = "1234567890";
 #include <DallasTemperature.h>
 #include <Wire.h>
 
-char server [] = "boym.cz"; //URL adresa serveru
+char server [] = "pomykal.eu"; //URL adresa serveru
 
 const int pinCidlaDS = 4; // nastavení čísla vstupního pinu pro OneWire
 
@@ -66,7 +65,7 @@ void loop ()
 
   // wait for WiFi connection
   if (client.connect(server, 80)) {
-    delay(1000);   // pauza pro přehlednější výpis
+  //  delay(1000);   // pauza pro přehlednější výpis
 
     /* 1-wire sekce */ // načtení informací ze všech čidel na daném pinu dle adresy a uložení do promněných 
     
@@ -87,15 +86,14 @@ void loop ()
     /*konec 1-wire sekce*/
     
     
-    String url = "/logger.php";
+    String url = "meteo/logger.php";
     String url1 = "?Teplota_100=";
     String url2 = "&Teplota_50=";
     String url3 = "&Teplota_20=";
     String url4 = "&Teplota_10=";
     String url5 = "&Teplota_5=";
     String url6 = "&Teplota_prizemni=";
-  //  float url4 = senzoryDS.getTempCByIndex(1);
-
+  
     String host = "boym.cz";
 
 
@@ -122,25 +120,6 @@ void loop ()
     Serial.println("connection failed!]");
     client.stop();
   } // až po sem není třeba
-
-//update sekce
-
-t_httpUpdate_return ret = ESPhttpUpdate.update("192.168.1.2", 80, "/esp/update/update.php", "");
-switch(ret) {
-    case HTTP_UPDATE_FAILED:
-        Serial.println("[update] Update failed.");
-        break;
-    case HTTP_UPDATE_NO_UPDATES:
-        Serial.println("[update] Update no Update.");
-        break;
-    case HTTP_UPDATE_OK:
-        Serial.println("[update] Update ok."); // may not called we reboot the ESP
-        break;
-}
-
-
-//konec update sekce
-
 
 
   ESP.deepSleep(CasSpanku*1000000);
