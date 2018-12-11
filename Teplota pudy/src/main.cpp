@@ -13,7 +13,7 @@ const char* password = "1234567890";
 
 char server [] = "pomykal.eu"; //URL adresa serveru
 
-const int pinCidlaDS = 4; // nastavení čísla vstupního pinu pro OneWire
+const int pinCidlaDS = 2; // nastavení čísla vstupního pinu pro OneWire
 
 OneWire oneWireDS(pinCidlaDS); // vytvoření instance oneWireDS z knihovny OneWire
 
@@ -94,7 +94,7 @@ void loop ()
     String url5 = "&Teplota_5=";
     String url6 = "&Teplota_prizemni=";
   
-    String host = "boym.cz";
+    String host = "pomykal.eu";
 
 
     client.print(String("GET ") + url + url1 + temp100cm + url2 + temp50cm+ url3 + temp20cm + url4 + temp10cm +url5 + temp5cm + url6 + tempPrizemni5cm + " HTTP/1.1\r\n" +
