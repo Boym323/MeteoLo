@@ -2,9 +2,9 @@
 #include <WiFiClientSecure.h>
 #include <ESP8266httpUpdate.h>
 
-int CasHttp = 50; // cas v sekundách
+int CasHttp = 60; // cas v sekundách
 int CasNacteniTeploty = 10; // cas v sekundách
-int CasOTA = 300; // cas v sekundách
+int CasOTA = 60; // cas v sekundách
 
 unsigned long PosledniTemp = 0;
 unsigned long PosledniHTTP = 0;
@@ -62,6 +62,7 @@ void setup(void) {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+  Serial.println(__FILE__);
 
 }
 
@@ -150,5 +151,4 @@ void loop ()
     client.stop();
   }
 
-  // ESP.deepSleep(CasSpanku*1000000);
 }
