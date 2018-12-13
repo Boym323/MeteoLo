@@ -10,9 +10,8 @@ unsigned long PosledniTemp = 0;
 unsigned long PosledniHTTP = 0;
 unsigned long PosledniOTA = 0;
 
-const char* ssid = "SWS_free";
-//const char* ssid = "Home";
-//const char* password = "1234567890";
+const char* ssid = "Home";
+const char* password = "1234567890";
 
 // připojení knihoven
 #include <OneWire.h>
@@ -21,19 +20,19 @@ const char* ssid = "SWS_free";
 
 char server [] = "pomykal.eu"; //URL adresa serveru
 
-const int pinCidlaDS = 4; // nastavení čísla vstupního pinu pro OneWire
+const int pinCidlaDS = 2; // nastavení čísla vstupního pinu pro OneWire
 
 OneWire oneWireDS(pinCidlaDS); // vytvoření instance oneWireDS z knihovny OneWire
 
 DallasTemperature senzoryDS(&oneWireDS); // vytvoření instance senzoryDS z knihovny DallasTemperature
 // adresy 1-wire čidel//
 
-DeviceAddress tempSenzor100cm = {0x28, 0x61, 0x64, 0x12, 0x3D, 0xF1, 0x7B, 0x90};
-DeviceAddress tempSenzor50cm = {0x28, 0x89, 0x92, 0x77, 0x91, 0x11, 0x02, 0x6F};
-DeviceAddress tempSenzor20cm = {0x28, 0xA7, 0xE8, 0x77, 0x91, 0x09, 0x02, 0x80};
-DeviceAddress tempSenzor10cm = {0x28, 0xB9, 0x77, 0x77, 0x91, 0x14, 0x02, 0x75};
-DeviceAddress tempSenzor5cm = {0x28, 0xF4, 0xD0, 0x77, 0x91, 0x09, 0x02, 0x4D};
-DeviceAddress tempSenzorPrizemni5cm = {0x28, 0x30, 0xA4, 0x45, 0x92, 0x07, 0x02, 0x0B};
+ DeviceAddress tempSenzor100cm = {0x28, 0xAB, 0xA0, 0x77, 0x91, 0x11, 0x02, 0xB0};
+ DeviceAddress tempSenzor50cm = {0x28, 0x89, 0x92, 0x77, 0x91, 0x11, 0x02, 0x6F};
+ DeviceAddress tempSenzor20cm = {0x28, 0xA7, 0xE8, 0x77, 0x91, 0x09, 0x02, 0x80};
+ DeviceAddress tempSenzor10cm = {0x28, 0xB9, 0x77, 0x77, 0x91, 0x14, 0x02, 0x75};
+ DeviceAddress tempSenzor5cm = {0x28, 0xF4, 0xD0, 0x77, 0x91, 0x09, 0x02, 0x4D};
+ DeviceAddress tempSenzorPrizemni5cm = {0x28, 0x30, 0xA4, 0x45, 0x92, 0x07, 0x02, 0x0B};
 
 /*---------Proměnné-------------------------*/
 
@@ -52,8 +51,7 @@ void setup(void) {
   senzoryDS.begin();
   Wire.begin(); //inicializace I2C sběrnice
 
-  //WiFi.begin(ssid, password); // wifi s heslem
-  WiFi.begin(ssid); // wifi bez heslem
+  WiFi.begin(ssid, password); // wifi s heslem
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -113,7 +111,7 @@ void loop ()
                    "Connection: close\r\n\r\n");
 
       Serial.println("Odeslaná teplota skrze HTTP");
-
+      
       while (client.connected())
       {
         if (client.available())
