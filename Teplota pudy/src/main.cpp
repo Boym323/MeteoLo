@@ -91,7 +91,7 @@ void loop ()
       temp5cm = senzoryDS.getTempC(tempSenzor5cm);
       tempPrizemni5cm = senzoryDS.getTempC(tempSenzorPrizemni5cm);
 
-      Serial.println("[Načtení teploty z čidel:]");
+      Serial.println("[Načtení teploty z čidel]");
       PosledniTemp = millis();
     }
     /*konec 1-wire sekce*/
@@ -112,12 +112,13 @@ void loop ()
                    "Host: " + host + "\r\n" +
                    "Connection: close\r\n\r\n");
 
-      Serial.println("[Response:]");
+      Serial.println("Odeslaná teplota skrze HTTP");
 
       while (client.connected())
       {
         if (client.available())
         {
+          Serial.println("[Response:]");
           String line = client.readStringUntil('\n');
           Serial.println(line);
         }
