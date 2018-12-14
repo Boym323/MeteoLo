@@ -62,7 +62,8 @@ void setup(void) {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
-  Serial.println(__FILE__);
+  Serial.println(__TIME__);
+  Serial.println(__DATE__);
 
 }
 
@@ -90,7 +91,7 @@ void loop ()
       temp5cm = senzoryDS.getTempC(tempSenzor5cm);
       tempPrizemni5cm = senzoryDS.getTempC(tempSenzorPrizemni5cm);
 
-      Serial.println("[Načtení teploty z čidel]");
+      Serial.println("Načtení teploty z čidel");
       PosledniTemp = millis();
     }
     /*konec 1-wire sekce*/
