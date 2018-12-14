@@ -1,1 +1,6 @@
 .vscode
+.DS_Store
+Teplota pudy/.vscode/.BROWSE.C_CPP.DB
+Teplota pudy/.vscode/c_cpp_properties.json
+Teplota pudy/.vscode/launch.json
+Teplota pudy/.vscode/settings.json
