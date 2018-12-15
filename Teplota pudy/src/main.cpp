@@ -2,9 +2,9 @@
 #include <WiFiClientSecure.h>
 #include <ESP8266httpUpdate.h>
 
-int CasHttp = 50; // cas v sekundách
+int CasHttp = 60; // cas v sekundách
 int CasNacteniTeploty = 10; // cas v sekundách
-int CasOTA = 300; // cas v sekundách
+int CasOTA = 60; // cas v sekundách
 
 unsigned long PosledniTemp = 0;
 unsigned long PosledniHTTP = 0;
@@ -20,7 +20,7 @@ const char* password = "1234567890";
 
 char server [] = "pomykal.eu"; //URL adresa serveru
 
-const int pinCidlaDS = 2; // nastavení čísla vstupního pinu pro OneWire
+const int pinCidlaDS = 4; // nastavení čísla vstupního pinu pro OneWire
 
 OneWire oneWireDS(pinCidlaDS); // vytvoření instance oneWireDS z knihovny OneWire
 
@@ -116,7 +116,7 @@ void loop ()
       {
         if (client.available())
         {
-          Serial.println("[Response:]");
+          Serial.println("Response:");
           String line = client.readStringUntil('\n');
           Serial.println(line);
         }
@@ -141,14 +141,10 @@ void loop ()
       }
       PosledniOTA = millis();
     }
-
-
   }
   else
   {
     Serial.println("connection failed!]");
     client.stop();
   }
-
-  // ESP.deepSleep(CasSpanku*1000000);
 }
