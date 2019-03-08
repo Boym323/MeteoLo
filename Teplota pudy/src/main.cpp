@@ -2,13 +2,12 @@
 #include <WiFiClientSecure.h>
 #include <ESP8266httpUpdate.h>
 
-int CasHttp = 60; // cas v sekundách
-int CasNacteniTeploty = 10; // cas v sekundách
-int CasOTA = 60; // cas v sekundách
-
+int CasHttp = 300; // cas v sekundách
+int CasNacteniTeploty = 60; // cas v sekundách
+int CasOTA = 30; // cas v sekundách
 
 unsigned long PosledniTemp = 0;
-unsigned long PosledniHTTP = 0;
+unsigned long PosledniHTTP = 0; 
 unsigned long PosledniOTA = 0;
 
 const char* ssid = "Home";
@@ -21,7 +20,7 @@ const char* password = "1234567890";
 
 char server [] = "pomykal.eu"; //URL adresa serveru
 
-const int pinCidlaDS = 3; // nastavení čísla vstupního pinu pro OneWire
+const int pinCidlaDS = 4; // nastavení čísla vstupního pinu pro OneWire
 
 OneWire oneWireDS(pinCidlaDS); // vytvoření instance oneWireDS z knihovny OneWire
 
@@ -92,7 +91,7 @@ void loop ()
       temp5cm = senzoryDS.getTempC(tempSenzor5cm);
       tempPrizemni5cm = senzoryDS.getTempC(tempSenzorPrizemni5cm);
 
-      Serial.println("Načtení teploty z čidel");
+      Serial.println("[Načtení teploty z čidel]");
       PosledniTemp = millis();
     }
     /*konec 1-wire sekce*/
@@ -119,7 +118,7 @@ void loop ()
       {
         if (client.available())
         {
-          Serial.println("Response:");
+          Serial.println("[Response:]");
           String line = client.readStringUntil('\n');
           Serial.println(line);
         }
@@ -144,11 +143,12 @@ void loop ()
       }
       PosledniOTA = millis();
     }
+
+
   }
   else
   {
     Serial.println("connection failed!]");
     client.stop();
   }
-
 }
