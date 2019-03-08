@@ -12,8 +12,8 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "c:/Users/MPomykal/Documents/GitHub/Teplota pudy/.pioenvs/d1_mini_lite/firmware.elf",
-            "toolchainBinDir": "",
+            "executable": "/Users/mpomykal/Documents/GitHub/MeteoLo/Teplota pudy/.pioenvs/d1_mini_lite/firmware.elf",
+            "toolchainBinDir": "/Users/mpomykal/.platformio/packages/toolchain-xtensa/bin",
             "preLaunchTask": {
                 "type": "PlatformIO",
                 "task": "Pre-Debug"
@@ -24,8 +24,8 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "c:/Users/MPomykal/Documents/GitHub/Teplota pudy/.pioenvs/d1_mini_lite/firmware.elf",
-            "toolchainBinDir": "",
+            "executable": "/Users/mpomykal/Documents/GitHub/MeteoLo/Teplota pudy/.pioenvs/d1_mini_lite/firmware.elf",
+            "toolchainBinDir": "/Users/mpomykal/.platformio/packages/toolchain-xtensa/bin",
             "internalConsoleOptions": "openOnSessionStart"
         }
     ]

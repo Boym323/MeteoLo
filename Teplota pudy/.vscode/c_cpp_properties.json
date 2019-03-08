@@ -17,8 +17,6 @@
                 "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266httpUpdate/src",
                 "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/SPI",
                 "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/Wire",
-                "c:/Users/MPomykal/Documents/GitHub/Teplota pudy/lib/ESP8266HTTPClient/src",
-                "c:/Users/MPomykal/Documents/GitHub/Teplota pudy/lib/ESP8266httpUpdate/src",
                 "c:/Users/MPomykal/Documents/GitHub/Teplota pudy/lib/PubSubClient/src",
                 "C:/Users/MPomykal/.platformio/lib/DallasTemperature_ID54",
                 "C:/Users/MPomykal/.platformio/lib/NTP_ID5438",
@@ -38,7 +36,7 @@
                 "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266SSDP",
                 "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WebServer/src",
                 "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFiMesh/src",
-                "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266mDNS",
+                "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266mDNS/src",
                 "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/Ethernet/src",
                 "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/GDBStub/src",
                 "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/Hash/src",
@@ -71,8 +69,6 @@
                     "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266httpUpdate/src",
                     "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/SPI",
                     "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/Wire",
-                    "c:/Users/MPomykal/Documents/GitHub/Teplota pudy/lib/ESP8266HTTPClient/src",
-                    "c:/Users/MPomykal/Documents/GitHub/Teplota pudy/lib/ESP8266httpUpdate/src",
                     "c:/Users/MPomykal/Documents/GitHub/Teplota pudy/lib/PubSubClient/src",
                     "C:/Users/MPomykal/.platformio/lib/DallasTemperature_ID54",
                     "C:/Users/MPomykal/.platformio/lib/NTP_ID5438",
@@ -92,7 +88,7 @@
                     "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266SSDP",
                     "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WebServer/src",
                     "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFiMesh/src",
-                    "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266mDNS",
+                    "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266mDNS/src",
                     "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/Ethernet/src",
                     "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/GDBStub/src",
                     "C:/Users/MPomykal/.platformio/packages/framework-arduinoespressif8266/libraries/Hash/src",
@@ -110,18 +106,20 @@
                 ]
             },
             "defines": [
-                "PLATFORMIO=30603",
+                "PLATFORMIO=30605",
                 "ESP8266",
                 "ARDUINO_ARCH_ESP8266",
-                "ESP8266_WEMOS_D1MINI",
-                "ESP8266_WEMOS_D1MINILITE",
+                "ARDUINO_ESP8266_WEMOS_D1MINILITE",
                 "F_CPU=80000000L",
                 "__ets__",
                 "ICACHE_FLASH",
                 "ARDUINO=10805",
                 "ARDUINO_BOARD=\"PLATFORMIO_D1_MINI_LITE\"",
+                "FLASHMODE_DOUT",
                 "LWIP_OPEN_SRC",
                 "TCP_MSS=536",
+                "LWIP_FEATURES=1",
+                "LWIP_IPV6=0",
                 "VTABLES_IN_FLASH",
                 ""
             ],
@@ -130,6 +128,5 @@
             "cppStandard": "c++11",
             "compilerPath": "C:/Users/MPomykal/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-gcc.exe -mlongcalls -mtext-section-literals"
         }
-    ],
-    "version": 4
+    ]
 }
