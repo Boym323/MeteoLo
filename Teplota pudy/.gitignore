@@ -1,4 +1,5 @@
-.pio
-.pioenvs
-.piolibdeps
-.vscode
+*.DB
+*.json
+.pioenvs/
+.piolibdeps/
+.vscode/
