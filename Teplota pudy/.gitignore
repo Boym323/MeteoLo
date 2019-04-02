@@ -3,3 +3,7 @@
 .pioenvs/
 .piolibdeps/
 .vscode/
+test/
+include/
+.travis.yml
+.DS_Store

@@ -128,5 +128,6 @@
             "cppStandard": "c++11",
             "compilerPath": "C:/Users/MPomykal/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-gcc.exe -mlongcalls -mtext-section-literals"
         }
-    ]
+    ],
+    "version": 4
 }
