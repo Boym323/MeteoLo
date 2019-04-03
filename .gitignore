@@ -4,3 +4,4 @@
 .piolibdeps/
 .vscode/
 *.json
+.DS_Store
