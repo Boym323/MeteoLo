@@ -92,7 +92,6 @@ void loop ()
       tempPrizemni5cm = senzoryDS.getTempC(tempSenzorPrizemni5cm);
 
       Serial.println("[Načtení teploty z čidel]");
-
       PosledniTemp = millis();
     }
     /*konec 1-wire sekce*/
