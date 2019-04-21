@@ -1,14 +1,18 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClientSecure.h>
-#include <ESP8266httpUpdate.h>
+#include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
+#include <ESP8266HTTPUpdateServer.h>
 
 int CasHttp = 300; // cas v sekundách
-int CasNacteniTeploty = 60; // cas v sekundách
-int CasOTA = 30; // cas v sekundách
+int CasNacteniTeploty = 150; // cas v sekundách
 
 unsigned long PosledniTemp = 0;
-unsigned long PosledniHTTP = 0; 
-unsigned long PosledniOTA = 0;
+unsigned long PosledniHTTP = 0;  
+
+const char* host = "mainstation";
+ESP8266WebServer httpServer(80);
+ESP8266HTTPUpdateServer httpUpdater;
 
 const char* ssid = "Home";
 const char* password = "1234567890";
@@ -43,12 +47,21 @@ float temp10cm;
 float temp5cm;
 float tempPrizemni5cm;
 
-void setup(void) {
+void setup() {
 
-  // komunikace přes sériovou linku rychlostí 115200 baud
+
+  
+   // komunikace přes sériovou linku rychlostí 115200 baud
   Serial.begin(115200);
   // zapnutí komunikace knihovny s teplotním čidlem
   senzoryDS.begin();
+  senzoryDS.setResolution(tempSenzor100cm, 10);
+  senzoryDS.setResolution(tempSenzor50cm, 10);
+  senzoryDS.setResolution(tempSenzor20cm, 10);
+  senzoryDS.setResolution(tempSenzor10cm, 10);
+  senzoryDS.setResolution(tempSenzor5cm, 10);
+  senzoryDS.setResolution(tempSenzorPrizemni5cm, 10);
+  
   Wire.begin(); //inicializace I2C sběrnice
 
   WiFi.begin(ssid, password); // wifi s heslem
@@ -65,6 +78,16 @@ void setup(void) {
   Serial.println(__TIME__);
   Serial.println(__DATE__);
 
+    //OTA sekce
+
+    MDNS.begin(host);
+
+    httpUpdater.setup(&httpServer);
+    httpServer.begin();
+
+    MDNS.addService("http", "tcp", 80);
+    Serial.printf("HTTPUpdateServer ready! Open http://%s.local/update in your browser\n", host);
+
 }
 
 void loop ()
@@ -74,6 +97,8 @@ void loop ()
   // wait for WiFi connection
   if (client.connect(server, 80))
   {
+     httpServer.handleClient();
+     MDNS.update();
     /* 1-wire sekce */ // načtení informací ze všech čidel na daném pinu dle adresy a uložení do promněných
     if (millis() > PosledniTemp + CasNacteniTeploty * 1000)
     {
@@ -125,23 +150,6 @@ void loop ()
       }
       PosledniHTTP = millis();
    
-    }
-    else if (millis() > PosledniOTA + CasOTA * 1000)
-    {
-
-      t_httpUpdate_return ret = ESPhttpUpdate.update("boym.cz", 80, "/esp/update/update.php", "");
-      switch (ret) {
-        case HTTP_UPDATE_FAILED:
-          Serial.println("[update] Update failed.");
-          break;
-        case HTTP_UPDATE_NO_UPDATES:
-          Serial.println("[update] Update no Update.");
-          break;
-        case HTTP_UPDATE_OK:
-          Serial.println("[update] Update ok."); // may not called we reboot the ESP
-          break;
-      }
-      PosledniOTA = millis();
     }
 
 
