@@ -5,10 +5,10 @@
 #include <ESP8266HTTPUpdateServer.h>
 
 int CasHttp = 300; // cas v sekundách
-int CasNacteniTeploty = 150; // cas v sekundách
+int CasNacteniTeploty = 60; // cas v sekundách
 
-unsigned long PosledniTemp = 0;
-unsigned long PosledniHTTP = 0;  
+unsigned long PosledniTemp;
+unsigned long PosledniHTTP;  
 
 const char* host = "mainstation";
 ESP8266WebServer httpServer(80);
@@ -39,6 +39,14 @@ DeviceAddress Senzor5cm = {0x28, 0xF4, 0xD0, 0x77, 0x91, 0x09, 0x02, 0x4D};
 DeviceAddress SenzorPrizemni5cm = {0x28, 0x30, 0xA4, 0x45, 0x92, 0x07, 0x02, 0x0B};
 DeviceAddress Senzor200cm = {0x28, 0x32, 0xD9, 0x35, 0x05, 0x00, 0x00, 0xCC};
 /*---------Proměnné-------------------------*/
+
+float tempZcidla100cm;
+float tempZcidla50cm;
+float tempZcidla20cm;
+float tempZcidla10cm;
+float tempZcidla5cm;
+float tempZcidlaPrizemni5cm;
+float tempZcidla200cm;
 
 float temp100cm;
 float temp50cm;
@@ -87,8 +95,8 @@ void setup() {
     httpUpdater.setup(&httpServer);
     httpServer.begin();
 
-    MDNS.addService("http", "tcp", 80);
-    Serial.printf("HTTPUpdateServer ready! Open http://%s.local/update in your browser\n", host);
+    MDNS.addService("http", "tcp", 80); //OTA
+    Serial.printf("HTTPUpdateServer ready! Open http://%s.local/update in your browser\n", host); //OTA
 
 }
 
@@ -99,8 +107,8 @@ void loop ()
   // wait for WiFi connection
   if (client.connect(server, 80))
   {
-     httpServer.handleClient();
-     MDNS.update();
+     httpServer.handleClient(); //OTA
+     MDNS.update(); //OTA
     /* 1-wire sekce */ // načtení informací ze všech čidel na daném pinu dle adresy a uložení do promněných
     if (millis() > PosledniTemp + CasNacteniTeploty * 1000)
     {
@@ -112,13 +120,23 @@ void loop ()
       senzoryDS.requestTemperaturesByAddress(SenzorPrizemni5cm);
       senzoryDS.requestTemperaturesByAddress(Senzor200cm);
 
-      temp100cm = senzoryDS.getTempC(Senzor100cm);
-      temp50cm = senzoryDS.getTempC(Senzor50cm);
-      temp20cm = senzoryDS.getTempC(Senzor20cm);
-      temp10cm = senzoryDS.getTempC(Senzor10cm);
-      temp5cm = senzoryDS.getTempC(Senzor5cm);
-      tempPrizemni5cm = senzoryDS.getTempC(SenzorPrizemni5cm);
-      temp200cm = senzoryDS.getTempC(Senzor200cm);
+      tempZcidla100cm = senzoryDS.getTempC(Senzor100cm);
+      tempZcidla50cm = senzoryDS.getTempC(Senzor50cm);
+      tempZcidla20cm = senzoryDS.getTempC(Senzor20cm);
+      tempZcidla10cm = senzoryDS.getTempC(Senzor10cm);
+      tempZcidla5cm = senzoryDS.getTempC(Senzor5cm);
+      tempZcidlaPrizemni5cm = senzoryDS.getTempC(SenzorPrizemni5cm);
+      tempZcidla200cm = senzoryDS.getTempC(Senzor200cm);
+
+// validace teplot, teplota se do promněné uloží pouze, když je v rozsahu -50 - 70°C
+
+      if ((-50 < tempZcidla100cm) && (tempZcidla100cm < 70)) temp100cm = tempZcidla100cm;
+      if ((-50 < tempZcidla50cm) && (tempZcidla50cm < 70)) temp50cm = tempZcidla50cm;
+      if (( -50 < tempZcidla20cm) && (tempZcidla20cm< 70)) temp20cm = tempZcidla20cm;
+      if (( -50 < tempZcidla10cm) && (tempZcidla10cm< 70)) temp10cm = tempZcidla10cm;
+      if (( -50 < tempZcidla5cm) && (tempZcidla5cm< 70)) temp5cm = tempZcidla5cm;
+      if (( -50 < tempZcidlaPrizemni5cm) && (tempZcidlaPrizemni5cm< 70)) tempPrizemni5cm = tempZcidlaPrizemni5cm;
+      if (( -50 < tempZcidla200cm) && (tempZcidla200cm< 70)) temp200cm = tempZcidla200cm;
 
       Serial.println("[Načtení teploty z čidel]");
       PosledniTemp = millis();
