@@ -3,6 +3,9 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <ESP8266HTTPUpdateServer.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
+#include <Wire.h>
 
 int CasHttp = 300; // cas v sekundách
 int CasNacteniTeploty = 60; // cas v sekundách
@@ -16,11 +19,6 @@ ESP8266HTTPUpdateServer httpUpdater;
 
 const char* ssid = "Home";
 const char* password = "1234567890";
-
-// připojení knihoven
-#include <OneWire.h>
-#include <DallasTemperature.h>
-#include <Wire.h>
 
 char server [] = "pomykal.eu"; //URL adresa serveru
 
@@ -57,13 +55,19 @@ float tempPrizemni5cm;
 float temp200cm;
 
 void setup() {
-
-
-  
-   // komunikace přes sériovou linku rychlostí 115200 baud
+ 
+  // komunikace přes sériovou linku rychlostí 115200 baud
   Serial.begin(115200);
   // zapnutí komunikace knihovny s teplotním čidlem
+
   senzoryDS.begin();
+
+  /*nastavení rozlišení čidel 9 bit  - 0,5°C
+                              10 bit - 0,25°C
+                              11 bit - 0,125°C
+                              12 bit - 0,0625°C 
+  */
+
   senzoryDS.setResolution(Senzor100cm, 10);
   senzoryDS.setResolution(Senzor50cm, 10);
   senzoryDS.setResolution(Senzor20cm, 10);
