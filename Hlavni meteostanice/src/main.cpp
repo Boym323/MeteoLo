@@ -6,8 +6,6 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <Wire.h>
-#include <NTPClient.h> //NTP
-#include <WiFiUdp.h> //NTP
 
 int CasHttp = 300; // cas v sekundách
 int CasNacteniTeploty = 60; // cas v sekundách
@@ -21,9 +19,6 @@ ESP8266HTTPUpdateServer httpUpdater;
 
 const char* ssid = "Home";
 const char* password = "1234567890";
-
-WiFiUDP ntpUDP; //NTP
-NTPClient timeClient(ntpUDP, "192.168.1.1", 3600, 60000); //NTP
 
 char server [] = "pomykal.eu"; //URL adresa serveru
 
@@ -74,7 +69,6 @@ void setup() {
   MDNS.addService("http", "tcp", 80); //OTA
   Serial.printf("HTTPUpdateServer ready! Open http://%s.local/update in your browser\n", host); //OTA
 
-  timeClient.begin(); //NTP
 }
 
 
@@ -173,7 +167,7 @@ void http_push()
         Serial.println(line);
       }
     }
-    PosledniHTTP = millis()+61000;;
+    PosledniHTTP = millis();
   }
   else
   {
@@ -186,14 +180,13 @@ void loop ()
 {
   httpServer.handleClient(); //OTA
   MDNS.update(); //OTA
-  timeClient.update(); //NTP
 
   if (millis() > PosledniTemp + CasNacteniTeploty * 1000)
   {
     teplota ();
   }
 
-  else if (timeClient.getMinutes() % 5 == 0 && timeClient.getSeconds() == 00 && (millis() > PosledniHTTP))
+  else if (millis() > PosledniHTTP + CasHttp * 1000)
   {
     http_push();
   }
