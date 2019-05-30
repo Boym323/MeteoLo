@@ -6,19 +6,26 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <Wire.h>
-
 #include "Adafruit_Si7021.h"
+#include <SFE_BMP180.h>
+
 #define I2C_SCL 12
 #define I2C_SDA 13
+SFE_BMP180 pressure;
+#define ALTITUDE 420 // nadmořská výška stanice 
+
 Adafruit_Si7021 sensor = Adafruit_Si7021();
 
 int CasHttp = 300; // cas v sekundách
-int CasNacteniTeploty = 60; // cas v sekundách
-int CasNacteniVlhkosti = 60; // cas v sekundách
+int CasDat = 60; // cas v sekundách
+
 
 unsigned long PosledniTemp;
 unsigned long PosledniHTTP;
 unsigned long PosledniHum;
+unsigned long PosledniTlak;
+
+double T, P, p0, a; // BMP180 T - teplota. P - tlak, P0 - tlak u hladiny moře
 
 const char* host = "mainstation";
 ESP8266WebServer httpServer(80);
@@ -44,14 +51,15 @@ float tempPrizemni5cm;
 float temp200cm;
 float OutHumidity;
 
-void setup() {
-
+void setup() 
+{
   // komunikace přes sériovou linku rychlostí 115200 baud
-  Serial.begin(115200);
-  // zapnutí komunikace knihovny s teplotním čidlem
-  senzoryDS.begin();
+Serial.begin(115200);
 
  Wire.begin(I2C_SDA, I2C_SCL); //inicializace I2C sběrnice, SDA pin 13 - D7 ,SCL pin 12 - D6
+  // zapnutí komunikace knihovny s teplotním čidlem
+  senzoryDS.begin();
+  pressure.begin(); //BMP180
 
   WiFi.begin(ssid, password); // wifi s heslem
 
@@ -149,7 +157,7 @@ void vlhkost ()
 
   OutHumidity = sensor.readHumidity();
 
-  Serial.println("[Načtení vlhkosti");
+  Serial.println("Načtení vlhkosti");
   PosledniHum = millis();
 }
 
@@ -168,9 +176,11 @@ void http_push()
     String url6 = "&Teplota_prizemni=";
     String url7 = "&Teplota_200=";
     String url8 = "&Vlhkost_Out=";
+    String url9 = "&Tlak=";
+    String url10 = "&Tlak_more=";
     String host = "pomykal.eu";
 
-    client.print(String("GET ") + url + url1 + temp100cm + url2 + temp50cm + url3 + temp20cm + url4 + temp10cm + url5 + temp5cm + url6 + tempPrizemni5cm + url7 + temp200cm + url8 + OutHumidity + " HTTP/1.1\r\n" +
+    client.print(String("GET ") + url + url1 + temp100cm + url2 + temp50cm + url3 + temp20cm + url4 + temp10cm + url5 + temp5cm + url6 + tempPrizemni5cm + url7 + temp200cm + url8 + OutHumidity + url9 + P + url10 + p0 +" HTTP/1.1\r\n" +
                  "Host: " + host + "\r\n" +
                  "Connection: close\r\n\r\n");
 
@@ -194,20 +204,37 @@ void http_push()
   }
 }
 
+void tlak()
+{
+  char status;
+  
+  status = pressure.startTemperature();
+  delay(status);
+  status = pressure.getTemperature(T);
+  status = pressure.startPressure(3);
+  delay(status);
+  status = pressure.getPressure(P, T);
+  p0 = pressure.sealevel(P, ALTITUDE); // we're at 1655 meters (Boulder, CO)
+
+  PosledniTlak = millis();
+}
+
 void loop ()
 {
   httpServer.handleClient(); //OTA
   MDNS.update(); //OTA
 
-  if (millis() > PosledniTemp + CasNacteniTeploty * 1000)
+  if (millis() > PosledniTemp + CasDat * 1000)
   {
     teplota ();
   }
-  if (millis() > PosledniHum + CasNacteniVlhkosti * 1000)
+  if (millis() > PosledniHum + CasDat * 1000)
   {
     vlhkost ();
-    Serial.print("Vlhkost: ");
-    Serial.print(OutHumidity);
+  }
+  if (millis() > PosledniTlak + CasDat * 1000)
+  {
+    tlak ();
   }
 
   else if (millis() > PosledniHTTP + CasHttp * 1000)
