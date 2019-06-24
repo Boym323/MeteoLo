@@ -14,7 +14,6 @@
 WiFiUDP udp; // NTP
 EasyNTPClient ntpClient(udp, "192.168.1.1"); // 
 
-
 #define I2C_SCL 12
 #define I2C_SDA 13
 SFE_BMP180 pressure;
@@ -69,7 +68,7 @@ Serial.begin(115200);
   pressure.begin(); //BMP180
 
   WiFi.begin(ssid, password); // wifi s heslem
-
+ 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
@@ -191,13 +190,13 @@ void http_push()
                  "Host: " + host + "\r\n" +
                  "Connection: close\r\n\r\n");
 
-    Serial.println("Odeslaná teplota skrze HTTP");
+    Serial.println("Odeslaná teplota skrze HTTP do SQL");
 
     while (client.connected())
     {
       if (client.available())
       {
-        Serial.println("[Response:]");
+        Serial.println("Response:");
         String line = client.readStringUntil('\n');
         Serial.println(line);
       }
@@ -206,7 +205,7 @@ void http_push()
   }
   else
   {
-    Serial.println("connection failed!]");
+    Serial.println("connection failed!");
     client.stop();
   }
 }
@@ -232,11 +231,11 @@ void http_meteotemplate()
   // wait for WiFi connection
   if (client.connect(serverMeteotemplate, 80))
   {
-    String url = "api.php";
-    String host = "pocasi-loucka.eu";
-    String hesloAPI = "";
-
-    client.print(String("GET ") + url + 
+    String page  = "api.php";
+    String web = "pocasi-loucka.eu";
+    String hesloAPI = "fWhdtbA3";
+    
+    client.print(String("GET ") + page + 
     "?U="+ ntpClient.getUnixTime() + 
     "&T=" + temp200cm + 
     "&H=" + OutHumidity + 
@@ -250,10 +249,10 @@ void http_meteotemplate()
     "&PASS=" + hesloAPI + 
 
                 " HTTP/1.1\r\n" +
-                 "Host: " + host + "\r\n" +
+                 "Host: " + web + "\r\n" +
                  "Connection: close\r\n\r\n");
 
-    Serial.println("Odeslaná teplota skrze HTTP");
+    Serial.println("Odeslaná teplota skrze HTTP do meteotemplate");
 
     while (client.connected())
     {
@@ -268,7 +267,7 @@ void http_meteotemplate()
   }
   else
   {
-    Serial.println("connection failed!]");
+    Serial.println("connection failed meteotemplate!");
     client.stop();
   }
 }
@@ -278,7 +277,7 @@ void loop ()
 {
   httpServer.handleClient(); //OTA
   MDNS.update(); //OTA
-
+   
   if (millis() > PosledniTemp + CasDat * 1000)
   {
     teplota ();
