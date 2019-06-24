@@ -8,11 +8,17 @@
 #include <Wire.h>
 #include "Adafruit_Si7021.h"
 #include <SFE_BMP180.h>
+#include <EasyNTPClient.h> //NTP
+#include <WiFiUdp.h> //NTP
+
+WiFiUDP udp; // NTP
+EasyNTPClient ntpClient(udp, "192.168.1.1"); // 
+
 
 #define I2C_SCL 12
 #define I2C_SDA 13
 SFE_BMP180 pressure;
-#define ALTITUDE 420 // nadmořská výška stanice 
+#define ALTITUDE 425 // nadmořská výška stanice 
 
 Adafruit_Si7021 sensor = Adafruit_Si7021();
 
@@ -24,6 +30,7 @@ unsigned long PosledniTemp;
 unsigned long PosledniHTTP;
 unsigned long PosledniHum;
 unsigned long PosledniTlak;
+unsigned long PosledniMeteotemplate;
 
 double T, P, p0, a; // BMP180 T - teplota. P - tlak, P0 - tlak u hladiny moře
 
@@ -35,7 +42,7 @@ const char* ssid = "Home";
 const char* password = "1234567890";
 
 char server [] = "pomykal.eu"; //URL adresa serveru
-
+char serverMeteotemplate [] = "pocasi-loucka.eu";
 const int pinCidlaDS = 4; // nastavení čísla vstupního pinu pro OneWire
 
 OneWire oneWireDS(pinCidlaDS); // vytvoření instance oneWireDS z knihovny OneWire
@@ -219,6 +226,54 @@ void tlak()
   PosledniTlak = millis();
 }
 
+void http_meteotemplate()
+{
+  WiFiClient client;
+  // wait for WiFi connection
+  if (client.connect(serverMeteotemplate, 80))
+  {
+    String url = "api.php";
+    String host = "pocasi-loucka.eu";
+    String hesloAPI = "";
+
+    client.print(String("GET ") + url + 
+    "?U="+ ntpClient.getUnixTime() + 
+    "&T=" + temp200cm + 
+    "&H=" + OutHumidity + 
+    "&P=" + p0 + 
+    "&T1=" + tempPrizemni5cm + 
+    "&TS1=" + temp5cm + "&TSD1=5" + 
+    "&TS2=" + temp10cm + "&TSD2=10" + 
+    "&TS3=" + temp20cm + "&TSD3=20"+ 
+    "&TS4=" + temp50cm + "&TSD4=50"+ 
+    "&TS5=" + temp100cm + "&TSD5=100"+ 
+    "&PASS=" + hesloAPI + 
+
+                " HTTP/1.1\r\n" +
+                 "Host: " + host + "\r\n" +
+                 "Connection: close\r\n\r\n");
+
+    Serial.println("Odeslaná teplota skrze HTTP");
+
+    while (client.connected())
+    {
+      if (client.available())
+      {
+        Serial.println("Response:");
+        String line = client.readStringUntil('\n');
+        Serial.println(line);
+      }
+    }
+    PosledniMeteotemplate = millis();
+  }
+  else
+  {
+    Serial.println("connection failed!]");
+    client.stop();
+  }
+}
+
+
 void loop ()
 {
   httpServer.handleClient(); //OTA
@@ -235,6 +290,11 @@ void loop ()
   if (millis() > PosledniTlak + CasDat * 1000)
   {
     tlak ();
+  }
+
+  if (millis() > PosledniMeteotemplate + CasDat * 1000)
+  {
+    http_meteotemplate ();
   }
 
   else if (millis() > PosledniHTTP + CasHttp * 1000)
