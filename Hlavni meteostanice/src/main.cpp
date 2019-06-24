@@ -231,7 +231,7 @@ void http_meteotemplate()
   // wait for WiFi connection
   if (client.connect(serverMeteotemplate, 80))
   {
-    String page  = "api.php";
+    String page  = "/api.php";
     String web = "pocasi-loucka.eu";
     String hesloAPI = "fWhdtbA3";
     
