@@ -21,15 +21,12 @@ SFE_BMP180 pressure;
 
 Adafruit_Si7021 sensor = Adafruit_Si7021();
 
-int CasHttp = 300; // cas v sekundách
 int CasDat = 60; // cas v sekundách
+int CasHttp = 300; // cas v sekundách
 
-
-unsigned long PosledniTemp;
 unsigned long PosledniHTTP;
-unsigned long PosledniHum;
-unsigned long PosledniTlak;
-unsigned long PosledniMeteotemplate;
+unsigned long PosledniDataMeteotemplate;
+
 
 double T, P, p0, a; // BMP180 T - teplota. P - tlak, P0 - tlak u hladiny moře
 
@@ -155,7 +152,6 @@ void teplota ()
   if (( -50 < tempZcidla200cm) && (tempZcidla200cm < 70)) temp200cm = tempZcidla200cm;
 
   Serial.println("Načtení teploty z čidel");
-  PosledniTemp = millis();
 }
 
 void vlhkost ()
@@ -164,7 +160,6 @@ void vlhkost ()
   OutHumidity = sensor.readHumidity();
 
   Serial.println("Načtení vlhkosti");
-  PosledniHum = millis();
 }
 
 void http_push()
@@ -221,8 +216,6 @@ void tlak()
   delay(status);
   status = pressure.getPressure(P, T);
   p0 = pressure.sealevel(P, ALTITUDE); // we're at 1655 meters (Boulder, CO)
-
-  PosledniTlak = millis();
 }
 
 void http_meteotemplate()
@@ -263,7 +256,6 @@ void http_meteotemplate()
         Serial.println(line);
       }
     }
-    PosledniMeteotemplate = millis();
   }
   else
   {
@@ -278,22 +270,13 @@ void loop ()
   httpServer.handleClient(); //OTA
   MDNS.update(); //OTA
    
-  if (millis() > PosledniTemp + CasDat * 1000)
-  {
+  if (millis() > PosledniDataMeteotemplate + CasDat * 1000)
+   {
     teplota ();
-  }
-  if (millis() > PosledniHum + CasDat * 1000)
-  {
     vlhkost ();
-  }
-  if (millis() > PosledniTlak + CasDat * 1000)
-  {
     tlak ();
-  }
-
-  if (millis() > PosledniMeteotemplate + CasDat * 1000)
-  {
     http_meteotemplate ();
+    PosledniDataMeteotemplate = millis();
   }
 
   else if (millis() > PosledniHTTP + CasHttp * 1000)
