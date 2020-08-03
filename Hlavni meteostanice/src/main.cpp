@@ -9,36 +9,44 @@
 #include "Adafruit_Si7021.h"
 #include <SFE_BMP180.h>
 #include <EasyNTPClient.h> //NTP
-#include <WiFiUdp.h> //NTP
+#include <WiFiUdp.h>       //NTP
 
-WiFiUDP udp; // NTP
-EasyNTPClient ntpClient(udp, "192.168.1.1"); // 
+#include <PubSubClient.h>
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+const char *mqttServer = "192.168.1.2";
+const int mqttPort = 1883;
+const char *mqttUser = "mqtt username";
+const char *mqttPassword = "mqtt password";
+
+WiFiUDP udp;                                 // NTP
+EasyNTPClient ntpClient(udp, "192.168.1.1"); //
 
 #define I2C_SCL 12
 #define I2C_SDA 13
 SFE_BMP180 pressure;
-#define ALTITUDE 425 // nadmořská výška stanice 
+#define ALTITUDE 425 // nadmořská výška stanice
 
 Adafruit_Si7021 sensor = Adafruit_Si7021();
 
-int CasDat = 60; // cas v sekundách
+int CasDat = 60;   // cas v sekundách
 int CasHttp = 300; // cas v sekundách
 
 unsigned long PosledniHTTP;
 unsigned long PosledniDataMeteotemplate;
 
-
 double T, P, p0, a; // BMP180 T - teplota. P - tlak, P0 - tlak u hladiny moře
 
-const char* host = "mainstation";
+const char *host = "mainstation";
 ESP8266WebServer httpServer(80);
 ESP8266HTTPUpdateServer httpUpdater;
 
-const char* ssid = "Home";
-const char* password = "1234567890";
+const char *ssid = "Home";
+const char *password = "1234567890";
 
-char server [] = "pomykal.eu"; //URL adresa serveru
-char serverMeteotemplate [] = "pocasi-loucka.eu";
+char server[] = "pomykal.eu"; //URL adresa serveru
+char serverMeteotemplate[] = "pocasi-loucka.eu";
 const int pinCidlaDS = 4; // nastavení čísla vstupního pinu pro OneWire
 
 OneWire oneWireDS(pinCidlaDS); // vytvoření instance oneWireDS z knihovny OneWire
@@ -54,19 +62,20 @@ float tempPrizemni5cm;
 float temp200cm;
 float OutHumidity;
 
-void setup() 
+void setup()
 {
   // komunikace přes sériovou linku rychlostí 115200 baud
-Serial.begin(115200);
+  Serial.begin(115200);
 
- Wire.begin(I2C_SDA, I2C_SCL); //inicializace I2C sběrnice, SDA pin 13 - D7 ,SCL pin 12 - D6
+  Wire.begin(I2C_SDA, I2C_SCL); //inicializace I2C sběrnice, SDA pin 13 - D7 ,SCL pin 12 - D6
   // zapnutí komunikace knihovny s teplotním čidlem
   senzoryDS.begin();
   pressure.begin(); //BMP180
 
   WiFi.begin(ssid, password); // wifi s heslem
- 
-  while (WiFi.status() != WL_CONNECTED) {
+
+  while (WiFi.status() != WL_CONNECTED)
+  {
     delay(500);
     Serial.print(".");
   }
@@ -85,13 +94,11 @@ Serial.begin(115200);
   httpUpdater.setup(&httpServer);
   httpServer.begin();
 
-  MDNS.addService("http", "tcp", 80); //OTA
+  MDNS.addService("http", "tcp", 80);                                                           //OTA
   Serial.printf("HTTPUpdateServer ready! Open http://%s.local/update in your browser\n", host); //OTA
-
 }
 
-
-void teplota ()
+void teplota()
 {
   // adresy 1-wire čidel
 
@@ -143,18 +150,25 @@ void teplota ()
 
   // validace teplot, teplota se do promněné uloží pouze, když je v rozsahu -50 - 70°C
 
-  if ((-50 < tempZcidla100cm) && (tempZcidla100cm < 70)) temp100cm = tempZcidla100cm;
-  if ((-50 < tempZcidla50cm) && (tempZcidla50cm < 70)) temp50cm = tempZcidla50cm;
-  if (( -50 < tempZcidla20cm) && (tempZcidla20cm < 70)) temp20cm = tempZcidla20cm;
-  if (( -50 < tempZcidla10cm) && (tempZcidla10cm < 70)) temp10cm = tempZcidla10cm;
-  if (( -50 < tempZcidla5cm) && (tempZcidla5cm < 70)) temp5cm = tempZcidla5cm;
-  if (( -50 < tempZcidlaPrizemni5cm) && (tempZcidlaPrizemni5cm < 70)) tempPrizemni5cm = tempZcidlaPrizemni5cm;
-  if (( -50 < tempZcidla200cm) && (tempZcidla200cm < 70)) temp200cm = tempZcidla200cm;
+  if ((-50 < tempZcidla100cm) && (tempZcidla100cm < 70))
+    temp100cm = tempZcidla100cm;
+  if ((-50 < tempZcidla50cm) && (tempZcidla50cm < 70))
+    temp50cm = tempZcidla50cm;
+  if ((-50 < tempZcidla20cm) && (tempZcidla20cm < 70))
+    temp20cm = tempZcidla20cm;
+  if ((-50 < tempZcidla10cm) && (tempZcidla10cm < 70))
+    temp10cm = tempZcidla10cm;
+  if ((-50 < tempZcidla5cm) && (tempZcidla5cm < 70))
+    temp5cm = tempZcidla5cm;
+  if ((-50 < tempZcidlaPrizemni5cm) && (tempZcidlaPrizemni5cm < 70))
+    tempPrizemni5cm = tempZcidlaPrizemni5cm;
+  if ((-50 < tempZcidla200cm) && (tempZcidla200cm < 70))
+    temp200cm = tempZcidla200cm;
 
   Serial.println("Načtení teploty z čidel");
 }
 
-void vlhkost ()
+void vlhkost()
 {
 
   OutHumidity = sensor.readHumidity();
@@ -181,7 +195,7 @@ void http_push()
     String url10 = "&Tlak_more=";
     String host = "pomykal.eu";
 
-    client.print(String("GET ") + url + url1 + temp100cm + url2 + temp50cm + url3 + temp20cm + url4 + temp10cm + url5 + temp5cm + url6 + tempPrizemni5cm + url7 + temp200cm + url8 + OutHumidity + url9 + P + url10 + p0 +" HTTP/1.1\r\n" +
+    client.print(String("GET ") + url + url1 + temp100cm + url2 + temp50cm + url3 + temp20cm + url4 + temp10cm + url5 + temp5cm + url6 + tempPrizemni5cm + url7 + temp200cm + url8 + OutHumidity + url9 + P + url10 + p0 + " HTTP/1.1\r\n" +
                  "Host: " + host + "\r\n" +
                  "Connection: close\r\n\r\n");
 
@@ -208,7 +222,7 @@ void http_push()
 void tlak()
 {
   char status;
-  
+
   status = pressure.startTemperature();
   delay(status);
   status = pressure.getTemperature(T);
@@ -224,24 +238,24 @@ void http_meteotemplate()
   // wait for WiFi connection
   if (client.connect(serverMeteotemplate, 80))
   {
-    String page  = "/api.php";
+    String page = "/api.php";
     String web = "pocasi-loucka.eu";
     String hesloAPI = "fWhdtbA3";
-    
-    client.print(String("GET ") + page + 
-    "?U="+ ntpClient.getUnixTime() + 
-    "&T=" + temp200cm + 
-    "&H=" + OutHumidity + 
-    "&P=" + p0 + 
-    "&T1=" + tempPrizemni5cm + 
-    "&TS1=" + temp5cm + "&TSD1=5" + 
-    "&TS2=" + temp10cm + "&TSD2=10" + 
-    "&TS3=" + temp20cm + "&TSD3=20"+ 
-    "&TS4=" + temp50cm + "&TSD4=50"+ 
-    "&TS5=" + temp100cm + "&TSD5=100"+ 
-    "&PASS=" + hesloAPI + 
 
-                " HTTP/1.1\r\n" +
+    client.print(String("GET ") + page +
+                 "?U=" + ntpClient.getUnixTime() +
+                 "&T=" + temp200cm +
+                 "&H=" + OutHumidity +
+                 "&P=" + p0 +
+                 "&T1=" + tempPrizemni5cm +
+                 "&TS1=" + temp5cm + "&TSD1=5" +
+                 "&TS2=" + temp10cm + "&TSD2=10" +
+                 "&TS3=" + temp20cm + "&TSD3=20" +
+                 "&TS4=" + temp50cm + "&TSD4=50" +
+                 "&TS5=" + temp100cm + "&TSD5=100" +
+                 "&PASS=" + hesloAPI +
+
+                 " HTTP/1.1\r\n" +
                  "Host: " + web + "\r\n" +
                  "Connection: close\r\n\r\n");
 
@@ -264,18 +278,31 @@ void http_meteotemplate()
   }
 }
 
+void mqtt()
+{
+  client.setServer(mqttServer, mqttPort);
+  client.connect("ESP32Client", mqttUser, mqttPassword);
+  int waitmqqt = 50;
+  client.publish("Meteostanice/outTemp", String(temp200cm).c_str(), true);
+  delay(waitmqqt);
+  client.publish("Meteostanice/OutHumidity", String(OutHumidity).c_str(), true);
+  delay(waitmqqt);
+  client.publish("Meteostanice/signal1", String(WiFi.RSSI()).c_str(), true);
+}
 
-void loop ()
+void loop()
 {
   httpServer.handleClient(); //OTA
-  MDNS.update(); //OTA
-   
+  MDNS.update();             //OTA
+
   if (millis() > PosledniDataMeteotemplate + CasDat * 1000)
-   {
-    teplota ();
-    vlhkost ();
-    tlak ();
-    http_meteotemplate ();
+  {
+    teplota();
+    vlhkost();
+    tlak();
+    http_meteotemplate();
+    mqtt();
+
     PosledniDataMeteotemplate = millis();
   }
 

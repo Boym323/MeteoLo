@@ -1,6 +1,7 @@
 *.DB
 *.json
 .pioenvs/
+.pio/
 .piolibdeps/
 .vscode/
 test/
