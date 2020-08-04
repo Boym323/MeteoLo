@@ -283,11 +283,11 @@ void mqtt()
   client.setServer(mqttServer, mqttPort);
   client.connect("ESP32Client", mqttUser, mqttPassword);
   int waitmqqt = 50;
-  client.publish("Meteostanice/outTemp", String(temp200cm).c_str(), true);
+  client.publish("meteostanice/outTemp", String(temp200cm).c_str(), true);
   delay(waitmqqt);
-  client.publish("Meteostanice/OutHumidity", String(OutHumidity).c_str(), true);
+  client.publish("meteostanice/outHumidity", String(OutHumidity).c_str(), true);
   delay(waitmqqt);
-  client.publish("Meteostanice/signal1", String(WiFi.RSSI()).c_str(), true);
+  client.publish("meteostanice/barometer", String(p0).c_str(), true);
 }
 
 void loop()
