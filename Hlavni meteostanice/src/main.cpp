@@ -287,7 +287,7 @@ void mqtt()
   delay(waitmqqt);
   client.publish("meteostanice/outHumidity", String(OutHumidity).c_str(), true);
   delay(waitmqqt);
-  client.publish("meteostanice/barometer", String(p0).c_str(), true);
+  client.publish("meteostanice/pressure", String(P).c_str(), true);
 }
 
 void loop()
