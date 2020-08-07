@@ -288,7 +288,20 @@ void mqtt()
   client.publish("meteostanice/outHumidity", String(OutHumidity).c_str(), true);
   delay(waitmqqt);
   client.publish("meteostanice/pressure", String(P).c_str(), true);
+  delay(waitmqqt);
+  client.publish("meteostanice/extraTemp2", String(tempPrizemni5cm).c_str(), true);
+  delay(waitmqqt);
+  client.publish("meteostanice/extraTemp3", String(temp5cm).c_str(), true);
+  delay(waitmqqt);
+  client.publish("meteostanice/soilTemp1", String(temp10cm).c_str(), true);
+  delay(waitmqqt);
+  client.publish("meteostanice/soilTemp2", String(temp20cm).c_str(), true);
+  delay(waitmqqt);
+  client.publish("meteostanice/soilTemp3", String(temp50cm).c_str(), true);
+  delay(waitmqqt);
+  client.publish("meteostanice/soilTemp4", String(temp100cm).c_str(), true);
 }
+
 
 void loop()
 {
