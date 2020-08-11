@@ -176,49 +176,6 @@ void vlhkost()
   Serial.println("Načtení vlhkosti");
 }
 
-void http_push()
-{
-  WiFiClient client;
-  // wait for WiFi connection
-  if (client.connect(server, 80))
-  {
-    String url = "meteo/logger.php";
-    String url1 = "?Teplota_100=";
-    String url2 = "&Teplota_50=";
-    String url3 = "&Teplota_20=";
-    String url4 = "&Teplota_10=";
-    String url5 = "&Teplota_5=";
-    String url6 = "&Teplota_prizemni=";
-    String url7 = "&Teplota_200=";
-    String url8 = "&Vlhkost_Out=";
-    String url9 = "&Tlak=";
-    String url10 = "&Tlak_more=";
-    String host = "pomykal.eu";
-
-    client.print(String("GET ") + url + url1 + temp100cm + url2 + temp50cm + url3 + temp20cm + url4 + temp10cm + url5 + temp5cm + url6 + tempPrizemni5cm + url7 + temp200cm + url8 + OutHumidity + url9 + P + url10 + p0 + " HTTP/1.1\r\n" +
-                 "Host: " + host + "\r\n" +
-                 "Connection: close\r\n\r\n");
-
-    Serial.println("Odeslaná teplota skrze HTTP do SQL");
-
-    while (client.connected())
-    {
-      if (client.available())
-      {
-        Serial.println("Response:");
-        String line = client.readStringUntil('\n');
-        Serial.println(line);
-      }
-    }
-    PosledniHTTP = millis();
-  }
-  else
-  {
-    Serial.println("connection failed!");
-    client.stop();
-  }
-}
-
 void tlak()
 {
   char status;
@@ -283,11 +240,11 @@ void mqtt()
   client.setServer(mqttServer, mqttPort);
   client.connect("ESP32Client", mqttUser, mqttPassword);
   int waitmqqt = 50;
-  client.publish("meteostanice/outTemp", String(temp200cm).c_str(), true);
+  client.publish("meteostanice/extraTemp1", String(temp200cm).c_str(), true);
   delay(waitmqqt);
   client.publish("meteostanice/outHumidity", String(OutHumidity).c_str(), true);
-  delay(waitmqqt);
-  client.publish("meteostanice/pressure", String(P).c_str(), true);
+  //delay(waitmqqt);
+  //client.publish("meteostanice/pressure", String(P).c_str(), true);
   delay(waitmqqt);
   client.publish("meteostanice/extraTemp2", String(tempPrizemni5cm).c_str(), true);
   delay(waitmqqt);
@@ -315,12 +272,6 @@ void loop()
     tlak();
     http_meteotemplate();
     mqtt();
-
     PosledniDataMeteotemplate = millis();
-  }
-
-  else if (millis() > PosledniHTTP + CasHttp * 1000)
-  {
-    http_push();
   }
 }
