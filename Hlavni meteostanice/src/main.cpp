@@ -10,6 +10,7 @@
 #include <SFE_BMP180.h>
 #include <EasyNTPClient.h> //NTP
 #include <WiFiUdp.h>       //NTP
+#include <ArduinoJson.h>
 
 #include <PubSubClient.h>
 WiFiClient espClient;
@@ -240,15 +241,15 @@ void mqtt()
   client.setServer(mqttServer, mqttPort);
   client.connect("ESP32Client", mqttUser, mqttPassword);
   int waitmqqt = 50;
-  client.publish("meteostanice/extraTemp1", String(temp200cm).c_str(), true);
+  client.publish("meteostanice/outTemp", String(temp200cm).c_str(), true);
   delay(waitmqqt);
   client.publish("meteostanice/outHumidity", String(OutHumidity).c_str(), true);
-  //delay(waitmqqt);
-  //client.publish("meteostanice/pressure", String(P).c_str(), true);
   delay(waitmqqt);
-  client.publish("meteostanice/extraTemp2", String(tempPrizemni5cm).c_str(), true);
+  client.publish("meteostanice/barometer", String(p0).c_str(), true);
   delay(waitmqqt);
-  client.publish("meteostanice/extraTemp3", String(temp5cm).c_str(), true);
+  client.publish("meteostanice/extraTemp1", String(tempPrizemni5cm).c_str(), true);
+  delay(waitmqqt);
+  client.publish("meteostanice/extraTemp2", String(temp5cm).c_str(), true);
   delay(waitmqqt);
   client.publish("meteostanice/soilTemp1", String(temp10cm).c_str(), true);
   delay(waitmqqt);
@@ -257,8 +258,62 @@ void mqtt()
   client.publish("meteostanice/soilTemp3", String(temp50cm).c_str(), true);
   delay(waitmqqt);
   client.publish("meteostanice/soilTemp4", String(temp100cm).c_str(), true);
+   delay(waitmqqt);
+  DynamicJsonDocument JSONencoder(1024);
+  char buffer[256];
+
+  JSONencoder["outTemp"] = temp200cm;
+  JSONencoder["outHumidity"] = OutHumidity;
+  JSONencoder["barometer"] = p0;
+  JSONencoder["extraTemp1"] = tempPrizemni5cm;
+  JSONencoder["extraTemp2"] = temp5cm;
+  JSONencoder["soilTemp1"] = temp10cm;
+  JSONencoder["soilTemp2"] = temp20cm;
+  JSONencoder["soilTemp3"] = temp50cm;
+  JSONencoder["soilTemp4"] = temp100cm;
+  serializeJson(JSONencoder, buffer);
+
+  Serial.println("Sending message to MQTT topic..");
+  Serial.println(buffer);
+
+  if (client.publish("meteostanice/zahrada", buffer) == true)
+  {
+    Serial.println("Success sending message");
+  }
+  else
+  {
+    Serial.println("Error sending message");
+  }
 }
 
+void mqtt_json()
+{
+  DynamicJsonDocument JSONencoder(1024);
+  char buffer[256];
+
+  JSONencoder["outTemp"] = temp200cm;
+  JSONencoder["outHumidity"] = OutHumidity;
+  JSONencoder["barometer"] = p0;
+  JSONencoder["extraTemp1"] = tempPrizemni5cm;
+  JSONencoder["extraTemp2"] = temp5cm;
+  JSONencoder["soilTemp1"] = temp10cm;
+  JSONencoder["soilTemp2"] = temp20cm;
+  JSONencoder["soilTemp3"] = temp50cm;
+  JSONencoder["soilTemp4"] = temp100cm;
+  serializeJson(JSONencoder, buffer);
+
+  Serial.println("Sending message to MQTT topic..");
+  Serial.println(buffer);
+
+  if (client.publish("meteostanice/zahrada", buffer) == true)
+  {
+    Serial.println("Success sending message");
+  }
+  else
+  {
+    Serial.println("Error sending message");
+  }
+}
 
 void loop()
 {
