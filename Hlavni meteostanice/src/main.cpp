@@ -32,10 +32,8 @@ SFE_BMP180 pressure;
 Adafruit_Si7021 sensor = Adafruit_Si7021();
 
 int CasDat = 60;   // cas v sekundách
-int CasHttp = 300; // cas v sekundách
 
-unsigned long PosledniHTTP;
-unsigned long PosledniDataMeteotemplate;
+unsigned long PosledniOdeslaniDat;
 
 double T, P, p0, a; // BMP180 T - teplota. P - tlak, P0 - tlak u hladiny moře
 
@@ -240,57 +238,8 @@ void mqtt()
 {
   client.setServer(mqttServer, mqttPort);
   client.connect("ESP32Client", mqttUser, mqttPassword);
-  int waitmqqt = 50;
-  client.publish("meteostanice/outTemp", String(temp200cm).c_str(), true);
-  delay(waitmqqt);
-  client.publish("meteostanice/outHumidity", String(OutHumidity).c_str(), true);
-  delay(waitmqqt);
-  client.publish("meteostanice/barometer", String(p0).c_str(), true);
-  delay(waitmqqt);
-  client.publish("meteostanice/extraTemp1", String(tempPrizemni5cm).c_str(), true);
-  delay(waitmqqt);
-  client.publish("meteostanice/extraTemp2", String(temp5cm).c_str(), true);
-  delay(waitmqqt);
-  client.publish("meteostanice/soilTemp1", String(temp10cm).c_str(), true);
-  delay(waitmqqt);
-  client.publish("meteostanice/soilTemp2", String(temp20cm).c_str(), true);
-  delay(waitmqqt);
-  client.publish("meteostanice/soilTemp3", String(temp50cm).c_str(), true);
-  delay(waitmqqt);
-  client.publish("meteostanice/soilTemp4", String(temp100cm).c_str(), true);
-   delay(waitmqqt);
   DynamicJsonDocument JSONencoder(1024);
   char buffer[256];
-
-  JSONencoder["outTemp"] = temp200cm;
-  JSONencoder["outHumidity"] = OutHumidity;
-  JSONencoder["barometer"] = p0;
-  JSONencoder["extraTemp1"] = tempPrizemni5cm;
-  JSONencoder["extraTemp2"] = temp5cm;
-  JSONencoder["soilTemp1"] = temp10cm;
-  JSONencoder["soilTemp2"] = temp20cm;
-  JSONencoder["soilTemp3"] = temp50cm;
-  JSONencoder["soilTemp4"] = temp100cm;
-  serializeJson(JSONencoder, buffer);
-
-  Serial.println("Sending message to MQTT topic..");
-  Serial.println(buffer);
-
-  if (client.publish("meteostanice/zahrada", buffer) == true)
-  {
-    Serial.println("Success sending message");
-  }
-  else
-  {
-    Serial.println("Error sending message");
-  }
-}
-
-void mqtt_json()
-{
-  DynamicJsonDocument JSONencoder(1024);
-  char buffer[256];
-
   JSONencoder["outTemp"] = temp200cm;
   JSONencoder["outHumidity"] = OutHumidity;
   JSONencoder["barometer"] = p0;
@@ -320,13 +269,13 @@ void loop()
   httpServer.handleClient(); //OTA
   MDNS.update();             //OTA
 
-  if (millis() > PosledniDataMeteotemplate + CasDat * 1000)
+  if (millis() > PosledniOdeslaniDat + CasDat * 1000)
   {
     teplota();
     vlhkost();
     tlak();
     http_meteotemplate();
     mqtt();
-    PosledniDataMeteotemplate = millis();
+    PosledniOdeslaniDat = millis();
   }
 }
