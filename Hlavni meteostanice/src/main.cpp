@@ -44,8 +44,7 @@ ESP8266HTTPUpdateServer httpUpdater;
 const char *ssid = "Home";
 const char *password = "1234567890";
 
-char server[] = "pomykal.eu"; //URL adresa serveru
-char serverMeteotemplate[] = "pocasi-loucka.eu";
+char serverMeteotemplate[] = "pocasi-loucka.cz";
 const int pinCidlaDS = 4; // nastavení čísla vstupního pinu pro OneWire
 
 OneWire oneWireDS(pinCidlaDS); // vytvoření instance oneWireDS z knihovny OneWire
@@ -195,7 +194,7 @@ void http_meteotemplate()
   if (client.connect(serverMeteotemplate, 80))
   {
     String page = "/api.php";
-    String web = "pocasi-loucka.eu";
+    String web = "pocasi-loucka.cz";
     String hesloAPI = "fWhdtbA3";
 
     client.print(String("GET ") + page +
@@ -249,6 +248,8 @@ void mqtt()
   JSONencoder["soilTemp2"] = temp20cm;
   JSONencoder["soilTemp3"] = temp50cm;
   JSONencoder["soilTemp4"] = temp100cm;
+  long rssi = WiFi.RSSI();
+  JSONencoder["signal1"] = rssi;
   serializeJson(JSONencoder, buffer);
 
   Serial.println("Sending message to MQTT topic..");
@@ -263,7 +264,6 @@ void mqtt()
     Serial.println("Error sending message");
   }
 }
-
 void loop()
 {
   httpServer.handleClient(); //OTA
