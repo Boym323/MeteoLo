@@ -21,6 +21,12 @@ const int mqttPort = 1883;
 const char *mqttUser = "mqtt username";
 const char *mqttPassword = "mqtt password";
 
+//Static IP address configuration
+IPAddress staticIP(192, 168, 1, 31); //ESP static ip
+IPAddress gateway(192, 168, 1, 1);   //IP Address of your WiFi Router (Gateway)
+IPAddress subnet(255, 255, 255, 0);  //Subnet mask
+IPAddress dns(192, 168, 1, 1);       //DNS
+
 WiFiUDP udp;                                 // NTP
 EasyNTPClient ntpClient(udp, "192.168.1.1"); //
 
@@ -31,7 +37,7 @@ SFE_BMP180 pressure;
 
 Adafruit_Si7021 sensor = Adafruit_Si7021();
 
-int CasDat = 60;   // cas v sekundách
+int CasDat = 60; // cas v sekundách
 
 unsigned long PosledniOdeslaniDat;
 
@@ -69,6 +75,8 @@ void setup()
   // zapnutí komunikace knihovny s teplotním čidlem
   senzoryDS.begin();
   pressure.begin(); //BMP180
+
+  WiFi.config(staticIP, gateway, subnet, dns);
 
   WiFi.begin(ssid, password); // wifi s heslem
 
