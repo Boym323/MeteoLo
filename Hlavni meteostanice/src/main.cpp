@@ -37,7 +37,7 @@ SFE_BMP180 pressure;
 
 Adafruit_Si7021 sensor = Adafruit_Si7021();
 
-int CasDat = 60; // cas v sekundách
+int CasDat = 30; // cas v sekundách
 
 unsigned long PosledniOdeslaniDat;
 
@@ -77,7 +77,6 @@ void setup()
   pressure.begin(); //BMP180
 
   WiFi.config(staticIP, gateway, subnet, dns);
-
   WiFi.begin(ssid, password); // wifi s heslem
 
   while (WiFi.status() != WL_CONNECTED)
